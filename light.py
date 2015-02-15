@@ -5,7 +5,7 @@ class LightChannel(object):
 	Control a led channel with PWM Signal
 	Try to use hardware pwm when available.
 	"""
-	PWM_CAPABLE_PINS = [18,]
+	PWM_CAPABLE_PINS = [12,]
 	def __init__(self, pin_number):
 		super(LightChannel, self).__init__()
 		self.pin_number = pin_number
@@ -43,19 +43,19 @@ class LightChannel(object):
 
 if __name__ == '__main__':
 	import wiringpi2 as wiringpi  
-	wiringPiSetupPhys()
+	wiringpi.wiringPiSetupPhys()
 	import time
-	l_17 = LightChannel(17)
-	l_18 = LightChannel(18)
-	l_17.on()
+	l_17 = LightChannel(11)
+	l_12 = LightChannel(12)
+	l_11.on()
 	time.sleep(2)
-	l_18.on()
+	l_12.on()
 	time.sleep(2)
-	l_17.potency(50)
+	l_11.potency(50)
 	time.sleep(2)
-	l_18.potency(50)
+	l_12.potency(50)
 	time.sleep(2)
-	l_18.off()
-	l_17.off()
+	l_12.off()
+	l_11.off()
 	
 	
