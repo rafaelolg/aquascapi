@@ -9,43 +9,42 @@ class LightChannel(object):
 	def __init__(self, pin_number):
 		super(LightChannel, self).__init__()
 		self.pin_number = pin_number
+                self.setup()
 
-	def setup():
+	def setup(self):
 		'''
 		Initialize pwm output to zero. 
 		'''
-		if self.pin_number not in PWM_CAPABLE_PINS:
+		if self.pin_number not in LightChannel.PWM_CAPABLE_PINS:
 			wiringpi.softPwmCreate(self.pin_number,0, 100)
-			def change_duty(self, duty):
+			def change_duty(duty):
 				wiringpi.softPwmWrite(self.pin_number, duty)
 			self._change_duty_cicle_function =  change_duty
 		else:
 			wiringpi.pinMode(self.pin_number, wiringpi.GPIO.PWM_OUTPUT)
-			def change_duty(self, duty):
-				wiringpi.pwmWrite(self.pin_number, (duty/100.0) * 1024)
+			def change_duty(duty):
+				wiringpi.pwmWrite(self.pin_number,int( (duty/100.0) * 1024))
 			self._change_duty_cicle_function =  change_duty
 		self.off()
 
 	def potency(self, percentage=None):
-		if percentage:
-			percentage = max(0, min(percentage, 100))
-			self._change_duty_cicle_function(percentage)
-			self._duty = percentage
-		else:
-			return self._duty
+		percentage = max(0, min(percentage, 100))
+		self._change_duty_cicle_function(percentage)
+		self._duty = percentage
+		print('{} at {}'.format(self.pin_number, self._duty))
 
 	def on(self):
-		self.potency(0)
+		self.potency(100)
 	
 	def off(self):
-		self.potency(100)
+		self.potency(0)
 
 
 if __name__ == '__main__':
 	import wiringpi2 as wiringpi  
 	wiringpi.wiringPiSetupPhys()
 	import time
-	l_17 = LightChannel(11)
+	l_11 = LightChannel(11)
 	l_12 = LightChannel(12)
 	l_11.on()
 	time.sleep(2)
@@ -57,5 +56,7 @@ if __name__ == '__main__':
 	time.sleep(2)
 	l_12.off()
 	l_11.off()
-	
-	
+	for i in range(100):
+	    l_11.potency(i)	
+	    l_12.potency(i)
+	    time.sleep(1)
