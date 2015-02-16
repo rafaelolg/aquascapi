@@ -66,21 +66,21 @@ if __name__ == '__main__':
     import wiringpi2 as wiringpi  
     wiringpi.wiringPiSetupGpio()
     import time
-    l18 = LightChannel(18)
-    l19 = LightChannel(19)
-    l18.on()
+    c1 = LightChannel(18)
+    c2 = LightChannel(19)
+    c1.on()
     time.sleep(2)
-    l19.on()
+    c2.on()
     time.sleep(2)
-    l18.potency(50)
+    c1.potency(50)
     time.sleep(2)
-    l19.potency(50)
+    c2.potency(50)
     time.sleep(2)
-    l19.off()
-    l18.off()
+    c2.off()
+    c1.off()
     t = 0
     while t < 5:
-        l18.potency(50 - (t*10) 
-        l19.potency(t*10)
+        c1.potency(50 - (t*10) 
+        c2.potency(t*10)
         t = t + 0.03
         time.sleep(0.03)
