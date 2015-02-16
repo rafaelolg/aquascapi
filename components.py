@@ -85,10 +85,16 @@ if __name__ == '__main__':
     c2.off()
     c1.off()
     t = 0
-    while t < 5:
-        c1.potency(50 - (t * 10))
-        c2.potency(t * 10)
-        t = t + 0.03
-        time.sleep(0.03)
-    c2.off()
-    c1.off()
+    try:
+        while True:
+            while t < 10:
+                c1.potency(50 - (t * 5))
+                c2.potency(t * 5)
+                t = t + 0.03
+                time.sleep(0.03)
+            c1, c2 = c2, c1
+    except KeyboardInterrupt:
+        logging.debug('exit')
+    finally:
+        c2.off()
+        c1.off()
