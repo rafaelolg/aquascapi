@@ -90,3 +90,5 @@ if __name__ == '__main__':
         c2.potency(t * 10)
         t = t + 0.03
         time.sleep(0.03)
+    c2.off()
+    c1.off()
