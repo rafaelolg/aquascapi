@@ -84,9 +84,9 @@ if __name__ == '__main__':
     time.sleep(2)
     c2.off()
     c1.off()
-    t = 0
     try:
         while True:
+            t = 0
             while t < 10:
                 c1.potency(50 - (t * 5))
                 c2.potency(t * 5)
