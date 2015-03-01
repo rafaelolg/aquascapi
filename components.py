@@ -46,15 +46,13 @@ class LightChannel(object):
         self.potency(0)
 
 
-class Solenoid(object):
-
-    """
-    Controls a relay board to turn to switch between a solenoid and a
-    waterpump/oxygen injector.
-    """
+class NormallyOffRelay(object):
+    '''
+    Controls a relay that always.
+    '''
 
     def __init__(self, pin_number):
-        super(Solenoid, self).__init__()
+        super(NormallyOffRelay, self).__init__()
         self.pin_number = pin_number
         self.setup()
 
@@ -67,6 +65,23 @@ class Solenoid(object):
 
     def off(self):
         wiringpi.digitalWrite(self.pin_number, 0)
+
+
+class Solenoid(NormallyOffRelay):
+
+    """
+    Controls a relay board to turn to switch between a solenoid and a
+    waterpump/oxygen injector.
+    """
+    pass
+
+
+class Peristaltic(NormallyOffRelay):
+
+    """
+    Controls a relay board to turn to switch between a peristaltic pump.
+    """
+    pass
 
 
 if __name__ == '__main__':
