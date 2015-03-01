@@ -25,7 +25,7 @@ def schedule_transition(light_channel_component, start_hour,
         hour = "%02d:%02d" % (start_hour, i+38)
         potency =  start_poetency + (i * (delta / transition_duration))
         schedule.every().day.at(hour).do(
-            light_channel_component.potency, percentage=potency)
+            light_channel_component.potency, percentage=potency
         )
 
 
