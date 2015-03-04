@@ -23,7 +23,7 @@ def schedule_transition(light_channel_component, start_hour,
     delta = end_potency - start_poetency
     for i in range(transition_duration):
         hour = "%02d:%02d" % (start_hour, i+38)
-        potency =  start_poetency + (i * (delta / transition_duration))
+        potency = start_poetency + (i * (delta / transition_duration))
         schedule.every().day.at(hour).do(
             light_channel_component.potency, percentage=potency
         )
@@ -31,7 +31,6 @@ def schedule_transition(light_channel_component, start_hour,
 
 if __name__ == '__main__':
     wiringpi.wiringPiSetupGpio()
-
 
     light_channel1 = components.LightChannel(config.PINS['light_channel1'])
     light_channel2 = components.LightChannel(config.PINS['light_channel2'])

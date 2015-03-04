@@ -1,0 +1,30 @@
+{
+	"cool_light":{
+		"type": "light",
+		"pin": 18,
+		"control_points": {}
+	},
+	"warm_light":{
+		"type": "light",
+		"pin": 19,
+		"control_points": {}
+	},
+
+	"solenoid_co2":{
+		"type": "solenoid",
+		"pin": 5,
+		"control_points": {}
+	},
+
+	"peristaltic_kno3":{
+		"type": "peristaltic",
+		"pin": 6,
+		"control_points": {}
+	},
+
+	"peristaltic_khpo4":{
+		"type": "peristaltic",
+		"pin": 13,
+		"control_points": {}
+	},
+}

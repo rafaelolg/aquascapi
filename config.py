@@ -12,13 +12,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
+import json
+CONFIG_FILE = 'configuration.json'
 
-# Pin Numbers
-LIGHT_TRANSITION = 15
 
-PINS = {'light_channel1': 18,
-        'light_channel2': 19,
-        'solenoid_co2': 5,
-        'peristaltic_kno3': 6,
-        'peristaltic_khpo4': 13,
-        }
+def load_configuration(fname=CONFIG_FILE):
+    configuration = json.load(CONFIG_FILE)
+    return configuration

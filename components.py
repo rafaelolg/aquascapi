@@ -1,5 +1,27 @@
+#!/usr/bin/env python
+#
+# This file is part of Aquascapi.
+# Aquascapi is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# Aquascapi is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright Rafael Lopes
+
 import wiringpi2 as wiringpi
 import logging
+
+
+class NotAPinException(Exception):
+    """
+    Exception raised when trying to use a pin number non existent or None.
+    """
+    pass
 
 
 class LightChannel(object):
@@ -10,7 +32,7 @@ class LightChannel(object):
     """
     PWM_CAPABLE_PINS = [18, 19]
 
-    def __init__(self, pin_number):
+    def __init__(self, pin_number=None):
         super(LightChannel, self).__init__()
         self.pin_number = pin_number
         self.setup()
@@ -19,6 +41,9 @@ class LightChannel(object):
         '''
         Initialize pwm output to zero.
         '''
+        if not self.pin_number:
+            raise NotAPinException("%s is not a pin", self.pin_number)
+
         if self.pin_number not in LightChannel.PWM_CAPABLE_PINS:
             wiringpi.softPwmCreate(self.pin_number, 0, 100)
 
@@ -34,15 +59,24 @@ class LightChannel(object):
         self.off()
 
     def potency(self, percentage=None):
+        """
+        Set potency to percentage using pwm cycle.
+        """
         percentage = max(0, min(percentage, 100))
         self._change_duty_cicle_function(percentage)
         self._duty = percentage
         logging.debug('{} at {}'.format(self.pin_number, self._duty))
 
     def on(self):
+        """
+        Set potency to full
+        """
         self.potency(100)
 
     def off(self):
+        """
+        Set potency to zero
+        """
         self.potency(0)
 
 
@@ -77,7 +111,6 @@ class Solenoid(NormallyOffRelay):
 
 
 class Peristaltic(NormallyOffRelay):
-
     """
     Controls a relay board to turn to switch between a peristaltic pump.
     """
