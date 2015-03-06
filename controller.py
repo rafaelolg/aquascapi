@@ -14,10 +14,18 @@
 # Copyright Rafael Lopes
 
 import components
+from scipy.interpolate import interp1d
+
+
+# TIME IS ALWAYS IN SECONDS HERE
+INI_T = 0
+END_T = 60 * 60 * 24
 
 
 class TimeController(object):
+
     """Abstract class to control a compoment in a timed basis"""
+
     def __init__(self, config):
         super(TimeController, self).__init__()
         self.name = config['name']
@@ -29,18 +37,27 @@ class TimeController(object):
     def update(self, time):
         raise NotImplemented("Abstract Class")
 
+    def _make_time_function(self, ts, values):
+        ts = [INI_T] + list(ts) + [END_T]
+        values = [values[0]] + list(values) + [values[-1]]
+        return interp1d(ts, values, kind='linear')
+
 
 class SplineLightControl(TimeController):
+
     '''
-    Control a light compoment using a spline function over time.
+    Controls a light compoment using a spline function over time.
     '''
+
     def __init__(self, config):
         TimeController.__init__(config)
         self.compoment = components.LightChannel()
         self.compoment.pin_number = config['pin']
+        self.reconfig(config)
 
-    def reconfig(self, configuration):
-        raise NotImplemented("Abstract Class")
+    def reconfig(self, config):
+        self.function = self._make_function(config['control'].keys(), config['control'].values())
 
     def update(self, time):
-        raise NotImplemented("Abstract Class")
+        self.compoment.potency(self.function(time))
+
