@@ -61,3 +61,27 @@ class SplineLightControl(TimeController):
     def update(self, time):
         self.compoment.potency(self.function(time))
 
+
+class PeristalticPumpControl(TimeController):
+
+    '''
+    Controls a peristaltic pump over time.
+    '''
+    DOSE_INTERVAL = 60 * 15
+
+    def __init__(self, config):
+        TimeController.__init__(config)
+        self.compoment = components.Peristaltic()
+        self.compoment.pin_number = config['pin']
+        self.reconfig(config)
+
+    def reconfig(self, config):
+        self.compoment.flow_rate = config.get('flow_rate', components.Solenoid.DEFAULT_FLOW)
+        total_volume = config['total_volume_per_day']
+        self.dose = total_volume / (END_T / self.DOSE_INTERVAL)
+        self.last_dose = 0
+
+    def update(self, time):
+        if time - self.last_dose > self.DOSE_INTERVAL:
+            self.compoment.pump(self.dose)
+            self.last_dose = time

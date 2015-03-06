@@ -18,12 +18,12 @@
 	"peristaltic_kno3":{
 		"type": "peristaltic",
 		"pin": 6,
-		"control_points": {}
+		"flow_rate": 0.5
 	},
 
 	"peristaltic_khpo4":{
 		"type": "peristaltic",
 		"pin": 13,
-		"control_points": {}
+		"flow_rate": 0.5
 	},
 }
