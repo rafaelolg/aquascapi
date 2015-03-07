@@ -1,29 +1,17 @@
 {
-	"cool_light":{
-		"type": "light",
-		"pin": 18,
-		"control_points": {"0":0,"50399":0,  "50400":20, "61200":100,  "72000":100, "78200":0},
-	"warm_light":{
-		"type": "light",
-		"pin": 19,
-		"control_points": {"0":0,"50399":0,  "50400":50, "61200":100,  "72000":100, "79200":0},
-	},
-
-	"solenoid_co2":{
-		"type": "solenoid",
-		"pin": 5,
-		"control_points": {}
-	},
-
-	"peristaltic_kno3":{
-		"type": "peristaltic",
-		"pin": 6,
-		"flow_rate": 0.5
-	},
-
-	"peristaltic_khpo4":{
-		"type": "peristaltic",
-		"pin": 13,
-		"flow_rate": 0.5
-	},
+	"cool_light": {	
+		"control": {"50399": 0, "72000": 100, "61200": 100, "0": 0, "50400": 20, "78200": 0},
+	   	"type": "light", 
+		"pin": 18}, 
+	"peristaltic_kno3": {
+		"type": "peristaltic", 
+		"flow_rate": 0.5, 
+		"pin": 6}, 
+	"peristaltic_khpo4": {
+		"type": "peristaltic", 		
+		"flow_rate": 0.5, "pin": 13}, 
+	"warm_light": {
+		"control": {"50399": 0, "72000": 100, "61200": 100, "79200": 0, "0": 0, "50400": 50}, 
+		"type": "light", 
+		"pin": 19}
 }

@@ -17,5 +17,11 @@ CONFIG_FILE = 'configuration.json'
 
 
 def load_configuration(fname=CONFIG_FILE):
-    configuration = json.load(CONFIG_FILE)
-    return configuration
+    config = json.load(open(CONFIG_FILE))
+    for c in config:
+        if config[c]['type'] == 'light':
+            control = {}
+            for k in config[c]['control']:
+                control[int(k)] = config[c]['control'][k]
+            config[c]['control'] = control
+    return config
