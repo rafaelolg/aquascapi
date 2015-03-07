@@ -24,7 +24,7 @@ END_T = 60 * 60 * 24
 
 class TimeController(object):
 
-    """Abstract class to control a compoment in a timed basis"""
+    """Abstract class to control a component in a timed basis"""
 
     def __init__(self, config):
         super(TimeController, self).__init__()
@@ -42,22 +42,24 @@ class TimeController(object):
         values = [values[0]] + list(values) + [values[-1]]
         return interp1d(ts, values, kind='linear')
 
+
 class LightControl(TimeController):
     '''
-    Controls a light compoment using a spline function over time.
+    Controls a light component using a spline function over time.
     '''
 
     def __init__(self, config):
         TimeController.__init__(config)
-        self.compoment = components.LightChannel()
-        self.compoment.pin_number = config['pin']
+        self.component = components.LightChannel()
+        self.component.pin_number = config['pin']
         self.reconfig(config)
 
     def reconfig(self, config):
-        self.function = self._make_function(config['control'].keys(), config['control'].values())
+        self.function = self._make_function(
+            config['control'].keys(), config['control'].values())
 
     def update(self, time):
-        self.compoment.potency(self.function(time))
+        self.component.potency(self.function(time))
 
 
 class PeristalticPumpControl(TimeController):
@@ -69,17 +71,18 @@ class PeristalticPumpControl(TimeController):
 
     def __init__(self, config):
         TimeController.__init__(config)
-        self.compoment = components.Peristaltic()
-        self.compoment.pin_number = config['pin']
+        self.component = components.Peristaltic()
+        self.component.pin_number = config['pin']
         self.reconfig(config)
 
     def reconfig(self, config):
-        self.compoment.flow_rate = config.get('flow_rate', components.Solenoid.DEFAULT_FLOW)
+        self.component.flow_rate = config.get('flow_rate',
+                                              components.Solenoid.DEFAULT_FLOW)
         total_volume = config['total_volume_per_day']
         self.dose = total_volume / (END_T / self.DOSE_INTERVAL)
         self.last_dose = 0
 
     def update(self, time):
         if time - self.last_dose > self.DOSE_INTERVAL:
-            self.compoment.pump(self.dose)
+            self.component.pump(self.dose)
             self.last_dose = time
