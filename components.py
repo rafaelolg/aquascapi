@@ -15,9 +15,11 @@
 
 import wiringpi2 as wiringpi
 import logging
+import time
 
 
 class NotAPinException(Exception):
+
     """
     Exception raised when trying to use a pin number non existent or None.
     """
@@ -81,6 +83,7 @@ class LightChannel(object):
 
 
 class NormallyOffRelay(object):
+
     '''
     Controls a relay that always.
     '''
@@ -109,12 +112,20 @@ class Solenoid(NormallyOffRelay):
     """
     pass
 
-
 class Peristaltic(NormallyOffRelay):
+
     """
     Controls a relay board to turn to switch between a peristaltic pump.
     """
-    pass
+    DEFAULT_FLOW = 0.5  # default flow of 30ml/minute or 0.5ml/s
+
+    def pump(self, mililiters):
+        flow_rate = getattr(self, 'flow_rate', self.DEFAULT_FLOW)
+        time_to_pump = mililiters / flow_rate
+        self.on()
+        time.sleep(time_to_pump)
+        self.off()
+
 
 
 if __name__ == '__main__':
