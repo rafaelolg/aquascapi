@@ -112,6 +112,7 @@ class Solenoid(NormallyOffRelay):
     """
     pass
 
+
 class Peristaltic(NormallyOffRelay):
 
     """
@@ -127,10 +128,8 @@ class Peristaltic(NormallyOffRelay):
         self.off()
 
 
-
 if __name__ == '__main__':
     wiringpi.wiringPiSetupGpio()
-    import time
     c1 = LightChannel(18)
     c2 = LightChannel(19)
     c1.on()
