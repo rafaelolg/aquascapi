@@ -30,9 +30,9 @@ class TimeController(object):
         raise NotImplemented("Abstract Class")
 
 
-class SplineLightControl(TimeController):
+class LightControl(TimeController):
     '''
-    Control a light compoment using a spline function over time.
+    Control a light compoment using a linear interpolated function over time.
     '''
     def __init__(self, config):
         TimeController.__init__(config)
