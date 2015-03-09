@@ -24,4 +24,5 @@ def load_configuration(fname=CONFIG_FILE):
             for k in config[c]['control']:
                 control[int(k)] = config[c]['control'][k]
             config[c]['control'] = control
+            config[c]['name'] = c
     return config
