@@ -44,6 +44,7 @@ class TimeController(object):
 
 
 class LightControl(TimeController):
+
     '''
     Controls a light component using a spline function over time.
     '''
@@ -86,3 +87,9 @@ class PeristalticPumpControl(TimeController):
         if time - self.last_dose > self.DOSE_INTERVAL:
             self.component.pump(self.dose)
             self.last_dose = time
+
+
+CONTROLLER_FOR_TYPE = {
+    'light': LightControl,
+    "peristaltic": PeristalticPumpControl
+}
