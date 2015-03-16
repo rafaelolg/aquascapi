@@ -13,7 +13,6 @@
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
 
-import config
 #import components
 import schedule
 import sys
@@ -21,18 +20,32 @@ import datetime
 import time
 import controller
 
+from config import load_configuration
 
-def create_update_callback(compoment):
+
+
+def get_time():
+    now = datetime.datetime.now()
+    t = (now.hour * 3600) + (now.minute * 60) + now.second
+    return t
+
+def create_update_callback(compoment, calculate_time_function):
     def up_cb():
-        now = datetime.datetime.now()
-        t = (now.hour * 3600) + (now.minute * 60) + now.second
+        t = calculate_time_function()
         compoment.update(t)
     return up_cb
 
 
-def setup(config):
-    import wiringpi2 as wiringpi
+def setup(config_file_name, calculate_time_function = get_time):
+    import logging
+    logging.basicConfig(level=logging.DE,
+                        format='%(asctime)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    import wiringpi_mock as wiringpi
     wiringpi.wiringPiSetupGpio()
+
+    config_file = open(config_file_name)
+    config = load_configuration(config_file)
     controllers = set()
     for name in config:
         cfg = config[name]
@@ -43,10 +56,12 @@ def setup(config):
     return controllers
 
 
-if __name__ == '__main__':
-    config_file = open(sys.argv[1])
-    cfg = config.load_configuration(config_file)
-    controllers = setup(cfg)
+def run():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+if __name__ == '__main__':
+    controllers = setup(sys.argv[1])
+    run()
+
