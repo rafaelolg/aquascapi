@@ -13,6 +13,7 @@
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
 
+import config
 #import components
 import schedule
 import sys
@@ -36,13 +37,14 @@ def create_update_callback(compoment, calculate_time_function):
     return up_cb
 
 
-def setup(config_file_name, calculate_time_function = get_time):
-    import logging
-    logging.basicConfig(level=logging.DE,
-                        format='%(asctime)s - %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
-    import wiringpi_mock as wiringpi
+def setup(config):
+	import logging
+    import wiringpi2 as wiringpi
     wiringpi.wiringPiSetupGpio()
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(message)s',
+                        datefmt
+    
 
     config_file = open(config_file_name)
     config = load_configuration(config_file)
@@ -50,7 +52,7 @@ def setup(config_file_name, calculate_time_function = get_time):
     for name in config:
         cfg = config[name]
         c = controller.CONTROLLER_FOR_TYPE[cfg['type']](cfg)
-        f = create_update_callback(cfg['type'])
+        f = create_update_callback(cfg['type'], calculate_time_function)
         schedule.every().minute.do(f)
         controllers.add(c)
     return controllers
@@ -60,8 +62,3 @@ def run():
     while True:
         schedule.run_pending()
         time.sleep(1)
-
-if __name__ == '__main__':
-    controllers = setup(sys.argv[1])
-    run()
-

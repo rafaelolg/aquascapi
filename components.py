@@ -4,8 +4,8 @@
 # Aquascapi is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# Aquascapi is distributed in the hope that it will be useful,
+# (at your option later version.
+# Aquasca distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -34,7 +34,7 @@ class LightChannel(object):
     """
     PWM_CAPABLE_PINS = [18, 19]
 
-    def __init__(self, pin_number=None):
+    def __init__(self, pin_number):
         super(LightChannel, self).__init__()
         self.pin_number = pin_number
         self.setup()
