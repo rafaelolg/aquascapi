@@ -15,3 +15,8 @@ def softPwmWrite(pin_number, duty):
 def wiringPiSetupGpio():
     logging.debug('wiringPiSetupGpio')
 
+class Mock(object):
+	PWM_OUTPUT="GPIO.PWM_OUTPUT"
+	OUTPUT="OUTPUT"
+
+GPIO = Mock()
