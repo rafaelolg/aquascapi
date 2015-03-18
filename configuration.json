@@ -5,11 +5,15 @@
 		"pin": 18}, 
 	"peristaltic_kno3": {
 		"type": "peristaltic", 
+		"total_volume_per_day": 30,
 		"flow_rate": 0.5, 
 		"pin": 6}, 
 	"peristaltic_khpo4": {
 		"type": "peristaltic", 		
-		"flow_rate": 0.5, "pin": 13}, 
+		"flow_rate": 0.5, 
+		"total_volume_per_day": 10,
+		"pin": 13
+		}, 
 	"warm_light": {
 		"control": {"50399": 0, "72000": 100, "61200": 100, "79200": 0, "0": 0, "50400": 50}, 
 		"type": "light", 

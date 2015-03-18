@@ -21,32 +21,49 @@ import datetime
 import time
 import controller
 
+from config import load_configuration
 
-def create_update_callback(compoment):
+
+
+def get_time():
+    now = datetime.datetime.now()
+    t = (now.hour * 3600) + (now.minute * 60) + now.second
+    return t
+
+def create_update_callback(compoment, calculate_time_function):
     def up_cb():
-        now = datetime.datetime.now()
-        t = (now.hour * 3600) + (now.minute * 60) + now.second
+        t = calculate_time_function()
         compoment.update(t)
     return up_cb
 
 
 def setup(config):
+	import logging
     import wiringpi2 as wiringpi
     wiringpi.wiringPiSetupGpio()
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(message)s',
+                        datefmt
+    
+
+    config_file = open(config_file_name)
+    config = load_configuration(config_file)
     controllers = set()
     for name in config:
         cfg = config[name]
         c = controller.CONTROLLER_FOR_TYPE[cfg['type']](cfg)
-        f = create_update_callback(cfg['type'])
+        f = create_update_callback(cfg['type'], calculate_time_function)
         schedule.every().minute.do(f)
         controllers.add(c)
     return controllers
 
 
-if __name__ == '__main__':
-    config_file = open(sys.argv[1])
-    cfg = config.load_configuration(config_file)
-    controllers = setup(cfg)
+def run():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+if __name__ == '__main__':
+    controllers = setup(sys.argv[1])
+    run()
+

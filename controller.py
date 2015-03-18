@@ -29,7 +29,7 @@ class TimeController(object):
     def __init__(self, config):
         super(TimeController, self).__init__()
         self.name = config['name']
-        self.reconfig(self, config)
+        self.reconfig(config)
 
     def reconfig(self, configuration):
         raise NotImplemented("Abstract Class")
@@ -44,20 +44,18 @@ class TimeController(object):
 
 
 class LightControl(TimeController):
-
     '''
     Controls a light component using a spline function over time.
     '''
 
     def __init__(self, config):
-        TimeController.__init__(config)
-        self.component = components.LightChannel()
-        self.component.pin_number = config['pin']
+        TimeController.__init__(self, config)
+        self.component = components.LightChannel(config['pin'])
         self.reconfig(config)
 
     def reconfig(self, config):
-        self.function = self._make_function(
-            config['control'].keys(), config['control'].values())
+        self.function = self._make_time_function(
+            tuple(config['control'].keys()), tuple(config['control'].values()))
 
     def update(self, time):
         self.component.potency(self.function(time))
@@ -71,14 +69,12 @@ class PeristalticPumpControl(TimeController):
     DOSE_INTERVAL = 60 * 15
 
     def __init__(self, config):
-        TimeController.__init__(config)
-        self.component = components.Peristaltic()
-        self.component.pin_number = config['pin']
+        self.component = components.Peristaltic(config['pin'])
+        TimeController.__init__(self, config)
         self.reconfig(config)
 
     def reconfig(self, config):
-        self.component.flow_rate = config.get('flow_rate',
-                                              components.Solenoid.DEFAULT_FLOW)
+        self.component.flow_rate = config.get('flow_rate', components.Peristaltic.DEFAULT_FLOW)
         total_volume = config['total_volume_per_day']
         self.dose = total_volume / (END_T / self.DOSE_INTERVAL)
         self.last_dose = 0
