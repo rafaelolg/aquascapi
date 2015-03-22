@@ -13,7 +13,7 @@
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
 
-import wiringpi_mock as wiringpi
+import wiringpi2 as wiringpi
 import logging
 import time
 
