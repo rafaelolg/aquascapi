@@ -15,11 +15,11 @@
 
 import components
 from scipy.interpolate import interp1d
-
+import logging
 
 # TIME IS ALWAYS IN SECONDS HERE
 INI_T = 0
-END_T = 60 * 60 * 24
+END_T = 24 * 60 * 60  # seconds in a day
 
 
 class TimeController(object):
@@ -35,7 +35,11 @@ class TimeController(object):
         raise NotImplemented("Abstract Class")
 
     def update(self, time):
-        raise NotImplemented("Abstract Class")
+        h = time//3600
+        m = (time - h*3600) // 60
+        s = (time - h*3600 - m*60)
+        logging.debug('(t%s : h%s m%s s%s)', time, h, m, s)
+        print("h%s m%s s%s\n" % (h, m, s))
 
     def _make_time_function(self, ts, values):
         ts = [INI_T] + list(ts) + [END_T]
@@ -44,6 +48,7 @@ class TimeController(object):
 
 
 class LightControl(TimeController):
+
     '''
     Controls a light component using a spline function over time.
     '''
@@ -54,11 +59,18 @@ class LightControl(TimeController):
         self.reconfig(config)
 
     def reconfig(self, config):
-        self.function = self._make_time_function(
-            tuple(config['control'].keys()), tuple(config['control'].values()))
+        x = []
+        y = []
+        for k in sorted(config['control'].keys()):
+            x.append(k)
+            y.append(config['control'][k])
+        self.function = self._make_time_function(x, y)
 
     def update(self, time):
-        self.component.potency(self.function(time))
+        TimeController.update(self, time)
+        p = self.function(time)
+        logging.debug('( Light potency %s)\n', p)
+        self.component.potency(p)
 
 
 class PeristalticPumpControl(TimeController):
@@ -71,6 +83,7 @@ class PeristalticPumpControl(TimeController):
     def __init__(self, config):
         self.component = components.Peristaltic(config['pin'])
         TimeController.__init__(self, config)
+        self.totalofday = 0
         self.reconfig(config)
 
     def reconfig(self, config):
@@ -80,9 +93,14 @@ class PeristalticPumpControl(TimeController):
         self.last_dose = 0
 
     def update(self, time):
-        if time - self.last_dose > self.DOSE_INTERVAL:
+        TimeController.update(self, time)
+        if (time - self.last_dose > self.DOSE_INTERVAL) or (time < self.last_dose):
+            if time < self.last_dose:
+                self.totalofday = 0
             self.component.pump(self.dose)
             self.last_dose = time
+            self.totalofday = self.totalofday + self.dose
+            logging.debug("(Peristaltic of day) total: %f",  self.totalofday)
 
 
 CONTROLLER_FOR_TYPE = {
