@@ -13,22 +13,20 @@
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
 
-import config
-#import components
 import schedule
-import sys
 import datetime
 import time
 import controller
 
 from config import load_configuration
-
+import pprint
 
 
 def get_time():
     now = datetime.datetime.now()
     t = (now.hour * 3600) + (now.minute * 60) + now.second
     return t
+
 
 def create_update_callback(compoment, calculate_time_function):
     def up_cb():
@@ -37,23 +35,18 @@ def create_update_callback(compoment, calculate_time_function):
     return up_cb
 
 
-def setup(config):
-	import logging
+def setup(config_file_name, calculate_time_function=get_time):
     import wiringpi2 as wiringpi
     wiringpi.wiringPiSetupGpio()
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s - %(message)s',
-                        datefmt
-    
-
-    config_file = open(config_file_name)
-    config = load_configuration(config_file)
+    loaded_config = load_configuration(config_file_name)
     controllers = set()
-    for name in config:
-        cfg = config[name]
+    print(loaded_config)
+    for name in loaded_config.keys():
+        print(name)
+        cfg = loaded_config[name]
         c = controller.CONTROLLER_FOR_TYPE[cfg['type']](cfg)
-        f = create_update_callback(cfg['type'], calculate_time_function)
-        schedule.every().minute.do(f)
+        f = create_update_callback(c, calculate_time_function)
+        schedule.every().second.do(f)
         controllers.add(c)
     return controllers
 
