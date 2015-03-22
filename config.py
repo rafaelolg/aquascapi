@@ -17,7 +17,7 @@ CONFIG_FILE = 'configuration.json'
 
 
 def load_configuration(fname=CONFIG_FILE):
-    config = json.load(open(CONFIG_FILE))
+    config = json.load(open(fname))
     for c in config:
         config[c]['name'] = c
         if config[c]['type'] == 'light':
