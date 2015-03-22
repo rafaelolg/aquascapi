@@ -17,12 +17,29 @@ import core
 import datetime
 import sys
 
-def get_time(starttime =datetime.datetime.now()):
+MAX_T =  80000
+MIN_T = 50000
+
+
+def get_time(starttime=datetime.datetime.now()):
     t0 = (starttime.hour * 3600) + (starttime.minute * 60) + starttime.second
     now = datetime.datetime.now()
-    t = (now.hour * 3600) + (now.minute * 60) + now.second + t0
+    t = (now.hour * 3600) + (now.minute * 60) + now.second - t0
+    if t > 120:
+        sys.exit()
+    t = (t * (MAX_T/1200.)) + MIN_T
     return t
 
 if __name__ == '__main__':
+    import logging
+
+    logging.basicConfig(level=logging.ERROR,
+                        format='%(asctime)s %(levelname)-8s\
+                                %(filename)s:%(lineno)-4d: %(message)s',
+                        datefmt='%m-%d %H:%M',
+                        )
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s - %(message)s')
     controllers = core.setup(sys.argv[1], get_time)
     core.run()
