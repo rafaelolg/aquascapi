@@ -19,6 +19,7 @@ import time
 import controller
 
 from config import load_configuration
+import wiringpi2 as wpi
 import pprint
 
 
@@ -35,8 +36,7 @@ def create_update_callback(compoment, calculate_time_function):
     return up_cb
 
 
-def setup(config_file_name, calculate_time_function=get_time):
-    import wiringpi2 as wiringpi
+def setup(config_file_name, calculate_time_function=get_time, wiringpi=wpi):
     wiringpi.wiringPiSetupGpio()
     loaded_config = load_configuration(config_file_name)
     controllers = set()
