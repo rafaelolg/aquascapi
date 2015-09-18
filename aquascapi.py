@@ -13,20 +13,36 @@
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
 
-import core
-import sys
+import argparse
+import logging
+import logging.handlers
+from wiringpi_wrapper import WirinpiWrapper
 
+LOG_FILENAME = "/tmp/aquascapi.log"
+LOG_LEVEL = logging.WARNING  # Could be e.g. "DEBUG" or "WARNING"
 
 if __name__ == '__main__':
-    import logging
+    parser = argparse.ArgumentParser(description="Aquascapi: the " +
+                                     "raspberry aquarium controller")
+    parser.add_argument("-c", "--config", help="configuration file",
+                        default='configuration.json')
+    parser.add_argument("-d", "--debug",
+                        action='store_const',
+                        const=True,
+                        help="start in debug mode",
+                        default=False)
+    args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s %(levelname)-8s\
-                                %(filename)s:%(lineno)-4d: %(message)s',
-                        datefmt='%m-%d %H:%M',
-                        )
-
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s - %(message)s')
-    controllers = core.setup(sys.argv[1])
+    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+    if args.debug:
+        LOG_LEVEL = logging.DEBUG
+    logging.getLogger().setLevel(LOG_LEVEL)
+    handler = logging.handlers.TimedRotatingFileHandler(LOG_FILENAME,
+                                                        when="midnight",
+                                                        backupCount=3)
+    handler.setFormatter(formatter)
+    logging.getLogger().addHandler(handler)
+    wiringpi = WirinpiWrapper(mocking=args.debug)
+    import core
+    core.setup(args.config, wiringpi)
     core.run()

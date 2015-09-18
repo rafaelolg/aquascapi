@@ -19,8 +19,6 @@ import time
 import controller
 
 from config import load_configuration
-import wiringpi2 as wpi
-import pprint
 
 
 def get_time():
@@ -36,7 +34,7 @@ def create_update_callback(compoment, calculate_time_function):
     return up_cb
 
 
-def setup(config_file_name, calculate_time_function=get_time, wiringpi=wpi):
+def setup(config_file_name, wiringpi, calculate_time_function=get_time):
     wiringpi.wiringPiSetupGpio()
     loaded_config = load_configuration(config_file_name)
     controllers = set()
@@ -44,6 +42,7 @@ def setup(config_file_name, calculate_time_function=get_time, wiringpi=wpi):
     for name in loaded_config.keys():
         print(name)
         cfg = loaded_config[name]
+        cfg['wiringpi'] = wiringpi
         c = controller.CONTROLLER_FOR_TYPE[cfg['type']](cfg)
         f = create_update_callback(c, calculate_time_function)
         schedule.every().second.do(f)

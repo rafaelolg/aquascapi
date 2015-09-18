@@ -13,7 +13,6 @@
 # along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
 # Copyright Rafael Lopes
 
-import wiringpi2 as wiringpi
 import logging
 import time
 
@@ -26,18 +25,25 @@ class NotAPinException(Exception):
     pass
 
 
-class LightChannel(object):
+class Component(object):
+    """Control a generic Component"""
+    def __init__(self, pin_number, wiringpi):
+        super(Component, self).__init__()
+        self.pin_number = pin_number
+        self.wiringpi = wiringpi
+        self.setup()
+
+    def setup(self):
+        raise NotImplemented
+
+
+class LightChannel(Component):
 
     """
     Control a led channel with PWM Signal
     Try to use hardware pwm when available.
     """
     PWM_CAPABLE_PINS = [18, 19]
-
-    def __init__(self, pin_number):
-        super(LightChannel, self).__init__()
-        self.pin_number = pin_number
-        self.setup()
 
     def setup(self):
         '''
@@ -47,16 +53,18 @@ class LightChannel(object):
             raise NotAPinException("%s is not a pin", self.pin_number)
 
         if self.pin_number not in LightChannel.PWM_CAPABLE_PINS:
-            wiringpi.softPwmCreate(self.pin_number, 0, 100)
+            self.wiringpi.softPwmCreate(self.pin_number, 0, 100)
 
             def change_duty(duty):
-                wiringpi.softPwmWrite(self.pin_number, duty)
+                self.wiringpi.softPwmWrite(self.pin_number, duty)
             self._change_duty_cicle_function = change_duty
         else:
-            wiringpi.pinMode(self.pin_number, wiringpi.GPIO.PWM_OUTPUT)
+            self.wiringpi.pinMode(self.pin_number,
+                                  self.wiringpi.GPIO.PWM_OUTPUT)
 
             def change_duty(duty):
-                wiringpi.pwmWrite(self.pin_number, int((duty / 100.0) * 1024))
+                self.wiringpi.pwmWrite(self.pin_number,
+                                       int((duty / 100.0) * 1024))
             self._change_duty_cicle_function = change_duty
         self.off()
 
@@ -82,26 +90,21 @@ class LightChannel(object):
         self.potency(0)
 
 
-class NormallyOffRelay(object):
+class NormallyOffRelay(Component):
 
     '''
     Controls a relay that always.
     '''
 
-    def __init__(self, pin_number):
-        super(NormallyOffRelay, self).__init__()
-        self.pin_number = pin_number
-        self.setup()
-
     def setup(self):
-        wiringpi.pinMode(self.pin_number, wiringpi.GPIO.OUTPUT)
-        wiringpi.digitalWrite(self.pin_number, 0)
+        self.wiringpi.pinMode(self.pin_number, self.wiringpi.GPIO.OUTPUT)
+        self.wiringpi.digitalWrite(self.pin_number, 0)
 
     def on(self):
-        wiringpi.digitalWrite(self.pin_number, 1)
+        self.wiringpi.digitalWrite(self.pin_number, 1)
 
     def off(self):
-        wiringpi.digitalWrite(self.pin_number, 0)
+        self.wiringpi.digitalWrite(self.pin_number, 0)
 
 
 class Solenoid(NormallyOffRelay):
@@ -129,9 +132,10 @@ class Peristaltic(NormallyOffRelay):
 
 
 if __name__ == '__main__':
-    wiringpi.wiringPiSetupGpio()
-    c1 = LightChannel(18)
-    c2 = LightChannel(19)
+    from wiringpi_wrapper import WirinpiWrapper
+    wiringpi = WirinpiWrapper()
+    c1 = LightChannel(18, wiringpi)
+    c2 = LightChannel(19, wiringpi)
     c1.on()
     time.sleep(2)
     c2.on()

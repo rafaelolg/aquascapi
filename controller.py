@@ -55,7 +55,8 @@ class LightControl(TimeController):
 
     def __init__(self, config):
         TimeController.__init__(self, config)
-        self.component = components.LightChannel(config['pin'])
+        self.component = components.LightChannel(config['pin'],
+                                                 config['wiringpi'])
         self.reconfig(config)
 
     def reconfig(self, config):
@@ -81,7 +82,8 @@ class PeristalticPumpControl(TimeController):
     DOSE_INTERVAL = 60 * 15
 
     def __init__(self, config):
-        self.component = components.Peristaltic(config['pin'])
+        self.component = components.Peristaltic(config['pin'],
+                                                config['wiringpi'])
         TimeController.__init__(self, config)
         self.totalofday = 0
         self.reconfig(config)
