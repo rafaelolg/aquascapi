@@ -42,6 +42,8 @@ if __name__ == '__main__':
                                                         backupCount=3)
     handler.setFormatter(formatter)
     logging.getLogger().addHandler(handler)
+    print('log(DEBUG=%s) : %s'%(str(args.debug), LOG_FILENAME))
+    print('configuration = (%s)'% args.config)
     wiringpi = WirinpiWrapper(mocking=args.debug)
     import core
     core.setup(args.config, wiringpi)
