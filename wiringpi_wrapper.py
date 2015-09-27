@@ -2,8 +2,8 @@ import logging
 
 
 class GPIOObject(object):
-    PWM_OUTPUT = "GPIO.PWM_OUTPUT"
-    OUTPUT = "OUTPUT"
+    PWM_OUTPUT = 2
+    OUTPUT = 1
 
 
 class WirinpiWrapper(object):
@@ -16,25 +16,25 @@ class WirinpiWrapper(object):
         logging.debug('digitalWrite %s, %s', pin_number, value)
         if not self.mocking:
             import wiringpi2
-            wiringpi2.digitalWrite(self, pin_number, value)
+            wiringpi2.digitalWrite(pin_number, value)
 
     def pinMode(self, pin_number, value):
         logging.debug('pinMode %s, %s', pin_number, value)
         if not self.mocking:
             import wiringpi2
-            wiringpi2.pinMode(self, pin_number, value)
+            wiringpi2.pinMode(pin_number, value)
 
     def pwmWrite(self, pin_number, value):
         logging.debug('pwmWrite %s, %s', pin_number, value)
         if not self.mocking:
             import wiringpi2
-            wiringpi2.pwmWrite(self, pin_number, value)
+            wiringpi2.pwmWrite(pin_number, value)
 
     def softPwmWrite(self, pin_number, duty):
         logging.debug('softPwmWrite %s, %s', pin_number, duty)
         if not self.mocking:
             import wiringpi2
-            wiringpi2.softPwmWrite(self, pin_number, duty)
+            wiringpi2.softPwmWrite(pin_number, duty)
 
     def wiringPiSetupGpio(self):
         logging.debug('wiringPiSetupGpio')
