@@ -10,16 +10,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
-# along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>.
+# along with Aquascapi.  If not, see <http://www.gnu.org/licenses/>
 # Copyright Rafael Lopes
 
 import components
 from scipy.interpolate import interp1d
 import logging
+import re
 
 # TIME IS ALWAYS IN SECONDS HERE
 INI_T = 0
 END_T = 24 * 60 * 60  # seconds in a day
+
+
+def parse_time(timestring):
+    '''
+    Parse strings like 16h22m01s to number of seconds since 0h0m0s
+    '''
+    match = re.match(r'(\d+)h(\d+)m(\d+)s', timestring)
+    if match:
+        [h, m, s] = match.groups()
+        return (3600*int(h)) + (int(m)*60) + int(s)
+    else:
+        raise Exception('not a time string %s' % timestring)
 
 
 class TimeController(object):
@@ -35,11 +48,7 @@ class TimeController(object):
         raise NotImplemented("Abstract Class")
 
     def update(self, time):
-        h = time//3600
-        m = (time - h*3600) // 60
-        s = (time - h*3600 - m*60)
-        logging.debug('(t%s : h%s m%s s%s)', time, h, m, s)
-        print("h%s m%s s%s\n" % (h, m, s))
+        pass
 
     def _make_time_function(self, ts, values):
         ts = [INI_T] + list(ts) + [END_T]
@@ -63,7 +72,7 @@ class LightControl(TimeController):
         x = []
         y = []
         for k in sorted(config['control'].keys()):
-            x.append(k)
+            x.append(parse_time(k))
             y.append(config['control'][k])
         self.function = self._make_time_function(x, y)
 

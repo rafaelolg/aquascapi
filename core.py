@@ -46,6 +46,7 @@ def setup(config_file_name, wiringpi, calculate_time_function=get_time):
         c = controller.CONTROLLER_FOR_TYPE[cfg['type']](cfg)
         f = create_update_callback(c, calculate_time_function)
         schedule.every().second.do(f)
+
         controllers.add(c)
     return controllers
 

@@ -23,6 +23,6 @@ def load_configuration(fname=CONFIG_FILE):
         if config[c]['type'] == 'light':
             control = {}
             for k in config[c]['control']:
-                control[int(k)] = config[c]['control'][k]
+                control[k] = config[c]['control'][k]
             config[c]['control'] = control
     return config

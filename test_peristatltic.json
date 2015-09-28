@@ -1,7 +1,0 @@
-{
-	"peristaltic_kno3": {
-		"type": "peristaltic", 
-		"total_volume_per_day": 30,
-		"flow_rate": 0.5, 
-		"pin": 6}
-}
