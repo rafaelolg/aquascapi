@@ -1,2 +1,4 @@
 schedule==0.1.10
 git+https://github.com/mrhwick/schedule.git
+scipy
+wiringpi2
