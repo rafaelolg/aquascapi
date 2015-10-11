@@ -126,6 +126,7 @@ class Peristaltic(NormallyOffRelay):
     def pump(self, mililiters):
         flow_rate = getattr(self, 'flow_rate', self.DEFAULT_FLOW)
         time_to_pump = mililiters / flow_rate
+        logging.debug('Pumping %s mls in %s seconds', mililiters, time_to_pump)
         self.on()
         time.sleep(time_to_pump)
         self.off()
