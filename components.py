@@ -98,13 +98,13 @@ class NormallyOffRelay(Component):
 
     def setup(self):
         self.wiringpi.pinMode(self.pin_number, self.wiringpi.GPIO.OUTPUT)
-        self.wiringpi.digitalWrite(self.pin_number, 0)
-
-    def on(self):
         self.wiringpi.digitalWrite(self.pin_number, 1)
 
-    def off(self):
+    def on(self):
         self.wiringpi.digitalWrite(self.pin_number, 0)
+
+    def off(self):
+        self.wiringpi.digitalWrite(self.pin_number, 1)
 
 
 class Solenoid(NormallyOffRelay):
