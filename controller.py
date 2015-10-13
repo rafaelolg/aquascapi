@@ -15,6 +15,7 @@
 
 import components
 from scipy.interpolate import interp1d
+import numpy
 import logging
 import re
 
@@ -36,12 +37,14 @@ def parse_time(timestring):
 
 def make_time_function_linear_interpolation(self, ts, values):
     ts = [INI_T] + list(ts) + [END_T]
-    values = [values[0]] + list(values) + [values[-1]]
+    values = [values[-1]] + list(values) + [values[-1]]
     return interp1d(ts, values, kind='linear')
 
 
 
-def make_time_function_last_value_interpolation(x, y):
+def make_time_function_last_value_interpolation(self, x, y):
+    x = numpy.array(x)
+    y = numpy.array(y)
     def f(t):
         return y[(x <= t).argmin() - 1]
     return f
@@ -88,6 +91,8 @@ class LightControl(Controller):
     def update(self, time):
         p = self.function(time)
         self.component.potency(p)
+        logging.info('%s %s%%', self.name, p)
+
 
 
 class PeristalticPumpControl(Controller):
@@ -95,7 +100,7 @@ class PeristalticPumpControl(Controller):
     '''
     Controls a peristaltic pump over time.
     '''
-    DOSE_INTERVAL = 60 * 15
+    DOSE_INTERVAL = 60 * 60 * 4
 
     def __init__(self, config):
         self.component = components.Peristaltic(config['pin'],
@@ -115,6 +120,7 @@ class PeristalticPumpControl(Controller):
             if time < self.last_dose:
                 self.totalofday = 0
             self.component.pump(self.dose)
+            logging.info('%s pumping %s', self.name, self.dose)
             self.last_dose = time
             self.totalofday = self.totalofday + self.dose
 
@@ -122,7 +128,7 @@ class SolenoidControl(Controller):
     '''
     Controls a solenoid.
     '''
-    INTERPOLATION_FACTORY = make_time_function_linear_interpolation
+    INTERPOLATION_FACTORY = make_time_function_last_value_interpolation
 
     def __init__(self, config):
         self.component = components.Solenoid(config['pin'],
@@ -133,8 +139,10 @@ class SolenoidControl(Controller):
     def update(self, time):
         v = self.function(time)
         if v > 0:
+            logging.info('%s ON (v=%s)', self.name, v)
             self.component.on()
         else:
+            logging.info('%s OFF', self.name)
             self.component.off()
 
 
