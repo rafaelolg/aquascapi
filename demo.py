@@ -17,18 +17,23 @@ import datetime
 import logging
 import time
 START = time.time()
+last_print = 0
 
 def create_demo_get_time(demonstration_total_time=120):
     '''
     Create a day in demonstration_total_time seconds.
     '''
     def get_time():
-        global START
+        global START, last_print
         delta =  time.time() - START
         logging.debug('delta = %s', delta)
         if delta > 120:
             raise Exception('End of demo')
         t = (delta/float(demonstration_total_time)) * (60 * 60 * 24)
-        print('#### TIME  = %s%%'%(delta/float(demonstration_total_time)))
+        last_print = last_print + 1
+        if not (last_print%3):
+            h = t/3600
+            m = (t%3600)/60
+            print('#### TIME  = %dh:%dm'%(h, m))
         return t
     return get_time

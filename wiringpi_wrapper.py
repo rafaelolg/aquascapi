@@ -41,3 +41,10 @@ class WirinpiWrapper(object):
         if not self.mocking:
             import wiringpi2
             wiringpi2.wiringPiSetupGpio()
+
+    def delay(self, milliseconds):
+        logging.debug('delay')
+        if not self.mocking:
+            import wiringpi2
+            wiringpi2.delay(milliseconds)
+

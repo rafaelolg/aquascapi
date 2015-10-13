@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     if args.demostration:
         get_time = create_demo_get_time()
-        logging.basicConfig(format='{%(module)s:%(lineno)d[%(levelname)s ]}  %(message)s',level=logging.DEBUG)
+        logging.basicConfig(format='{%(module)s:%(lineno)d[%(levelname)s ]}  %(message)s',level=logging.INFO)
         logging.info('### Starting demostration')
         logging.info('### configuration = (%s)'% args.config)
     else:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         handler.setFormatter(formatter)
         logging.getLogger().addHandler(handler)
 
-
+    logging.getLogger('schedule').setLevel(logging.WARNING)
     wiringpi = WirinpiWrapper(mocking=args.mocking)
     import core
     core.setup(config_file_name=args.config, 
