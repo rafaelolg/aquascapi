@@ -15,12 +15,11 @@
 import json
 CONFIG_FILE = 'configuration.json'
 
-
 def load_configuration(fname=CONFIG_FILE):
     config = json.load(open(fname))
     for c in config:
         config[c]['name'] = c
-        if config[c]['type'] == 'light':
+        if config[c].has_key('control'):
             control = {}
             for k in config[c]['control']:
                 control[k] = config[c]['control'][k]
