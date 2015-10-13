@@ -72,10 +72,10 @@ class LightChannel(Component):
         """
         Set potency to percentage using pwm cycle.
         """
+        logging.info('{} at {}'.format(self.pin_number, percentage))
         percentage = max(0, min(percentage, 100))
         self._change_duty_cicle_function(percentage)
         self._duty = percentage
-        logging.debug('{} at {}'.format(self.pin_number, self._duty))
 
     def on(self):
         """
@@ -101,9 +101,11 @@ class NormallyOffRelay(Component):
         self.off()
 
     def on(self):
+        logging.info('{} at {}'.format(self.pin_number, 'ON'))
         self.wiringpi.digitalWrite(self.pin_number, 0)
 
     def off(self):
+        logging.info('{} at {}'.format(self.pin_number, 'OFF'))
         self.wiringpi.digitalWrite(self.pin_number, 1)
 
 

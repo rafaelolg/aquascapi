@@ -16,35 +16,48 @@
 import argparse
 import logging
 import logging.handlers
+from demo import create_demo_get_time
 from wiringpi_wrapper import WirinpiWrapper
 
 LOG_FILENAME = "/tmp/aquascapi.log"
-LOG_LEVEL = logging.WARNING  # Could be e.g. "DEBUG" or "WARNING"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Aquascapi: the " +
                                      "raspberry aquarium controller")
     parser.add_argument("-c", "--config", help="configuration file",
                         default='configuration.json')
-    parser.add_argument("-d", "--debug",
-                        action='store_const',
-                        const=True,
-                        help="start in debug mode",
-                        default=False)
+    parser.add_argument("-d", "--demostration",
+                    action='store_const',
+                    const=True,
+                    help="start demo mode showing a day in 2 minutes",
+                    default=False)
+    parser.add_argument("-m", "--mocking",
+                    action='store_const',
+                    const=True,
+                    help="Dont really do anything other than print stuff",
+                    default=False)
     args = parser.parse_args()
 
-    formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
-    if args.debug:
-        LOG_LEVEL = logging.DEBUG
-    logging.getLogger().setLevel(LOG_LEVEL)
-    handler = logging.handlers.TimedRotatingFileHandler(LOG_FILENAME,
-                                                        when="midnight",
-                                                        backupCount=3)
-    handler.setFormatter(formatter)
-    logging.getLogger().addHandler(handler)
-    print('log(DEBUG=%s) : %s'%(str(args.debug), LOG_FILENAME))
-    print('configuration = (%s)'% args.config)
-    wiringpi = WirinpiWrapper(mocking=args.debug)
+
+    if args.demostration:
+        get_time = create_demo_get_time()
+        logging.basicConfig(format='{%(module)s:%(lineno)d[%(levelname)s ]}  %(message)s',level=logging.DEBUG)
+        logging.info('### Starting demostration')
+        logging.info('### configuration = (%s)'% args.config)
+    else:
+        get_time = core.get_time
+        formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
+        logging.getLogger().setLevel(logging.WARNING)
+        handler = logging.handlers.TimedRotatingFileHandler(LOG_FILENAME,
+                                                            when="midnight",
+                                                            backupCount=3)
+        handler.setFormatter(formatter)
+        logging.getLogger().addHandler(handler)
+
+
+    wiringpi = WirinpiWrapper(mocking=args.mocking)
     import core
-    core.setup(args.config, wiringpi)
+    core.setup(config_file_name=args.config, 
+               wiringpi=wiringpi, 
+               calculate_time_function=get_time)
     core.run()
