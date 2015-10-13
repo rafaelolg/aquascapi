@@ -1,0 +1,6 @@
+{
+	"solenoid": {
+		"type": "solenoid", 
+		"control": {"12h0m0s": 0, "13h1m0s": 1, "19h0m0s": 0},
+		"pin": 20}
+}

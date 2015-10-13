@@ -34,13 +34,24 @@ def parse_time(timestring):
     else:
         raise Exception('not a time string %s' % timestring)
 
+def make_time_function_linear_interpolation(self, ts, values):
+    ts = [INI_T] + list(ts) + [END_T]
+    values = [values[0]] + list(values) + [values[-1]]
+    return interp1d(ts, values, kind='linear')
 
-class TimeController(object):
+
+
+def make_time_function_last_value_interpolation(x, y):
+    def f(t):
+        return y[(x <= t).argmin() - 1]
+    return f
+
+class Controller(object):
 
     """Abstract class to control a component in a timed basis"""
 
     def __init__(self, config):
-        super(TimeController, self).__init__()
+        super(Controller, self).__init__()
         self.name = config['name']
         self.reconfig(config)
 
@@ -50,40 +61,37 @@ class TimeController(object):
     def update(self, time):
         pass
 
-    def _make_time_function(self, ts, values):
-        ts = [INI_T] + list(ts) + [END_T]
-        values = [values[0]] + list(values) + [values[-1]]
-        return interp1d(ts, values, kind='linear')
-
-
-class LightControl(TimeController):
-
-    '''
-    Controls a light component using a spline function over time.
-    '''
-
-    def __init__(self, config):
-        TimeController.__init__(self, config)
-        self.component = components.LightChannel(config['pin'],
-                                                 config['wiringpi'])
-        self.reconfig(config)
-
     def reconfig(self, config):
         x = []
         y = []
         for k in sorted(config['control'].keys()):
             x.append(parse_time(k))
             y.append(config['control'][k])
-        self.function = self._make_time_function(x, y)
+        self.function = self.INTERPOLATION_FACTORY(x, y)
+
+
+
+class LightControl(Controller):
+
+    '''
+    Controls a light component using a spline function over time.
+    '''
+    INTERPOLATION_FACTORY = make_time_function_linear_interpolation
+
+    def __init__(self, config):
+        Controller.__init__(self, config)
+        self.component = components.LightChannel(config['pin'],
+                                                 config['wiringpi'])
+        self.reconfig(config)
+
 
     def update(self, time):
-        TimeController.update(self, time)
         p = self.function(time)
         logging.debug('( Light potency %s)\n', p)
         self.component.potency(p)
 
 
-class PeristalticPumpControl(TimeController):
+class PeristalticPumpControl(Controller):
 
     '''
     Controls a peristaltic pump over time.
@@ -93,7 +101,7 @@ class PeristalticPumpControl(TimeController):
     def __init__(self, config):
         self.component = components.Peristaltic(config['pin'],
                                                 config['wiringpi'])
-        TimeController.__init__(self, config)
+        Controller.__init__(self, config)
         self.totalofday = 0
         self.reconfig(config)
 
@@ -104,7 +112,6 @@ class PeristalticPumpControl(TimeController):
         self.last_dose = 0
 
     def update(self, time):
-        TimeController.update(self, time)
         if (time - self.last_dose > self.DOSE_INTERVAL) or (time < self.last_dose):
             if time < self.last_dose:
                 self.totalofday = 0
@@ -113,8 +120,30 @@ class PeristalticPumpControl(TimeController):
             self.totalofday = self.totalofday + self.dose
             logging.debug("(Peristaltic of day) total: %f",  self.totalofday)
 
+class SolenoidControl(Controller):
+    '''
+    Controls a solenoid.
+    '''
+    INTERPOLATION_FACTORY = make_time_function_linear_interpolation
+
+    def __init__(self, config):
+        self.component = components.Solenoid(config['pin'],
+                                                config['wiringpi'])
+        Controller.__init__(self, config)
+        self.reconfig(config)
+
+    def update(self, time):
+        v = self.function(time)
+        logging.debug('( Solenoid %s)\n', v)
+        if v > 0:
+            self.on()
+        else:
+            self.off()
+
+
 
 CONTROLLER_FOR_TYPE = {
     'light': LightControl,
-    "peristaltic": PeristalticPumpControl
+    "peristaltic": PeristalticPumpControl,
+    "solenoid": SolenoidControl
 }
