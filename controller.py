@@ -87,7 +87,6 @@ class LightControl(Controller):
 
     def update(self, time):
         p = self.function(time)
-        logging.debug('( Light potency %s)\n', p)
         self.component.potency(p)
 
 
@@ -118,7 +117,6 @@ class PeristalticPumpControl(Controller):
             self.component.pump(self.dose)
             self.last_dose = time
             self.totalofday = self.totalofday + self.dose
-            logging.debug("(Peristaltic of day) total: %f",  self.totalofday)
 
 class SolenoidControl(Controller):
     '''
@@ -134,11 +132,10 @@ class SolenoidControl(Controller):
 
     def update(self, time):
         v = self.function(time)
-        logging.debug('( Solenoid %s)\n', v)
         if v > 0:
-            self.on()
+            self.component.on()
         else:
-            self.off()
+            self.component.off()
 
 
 
