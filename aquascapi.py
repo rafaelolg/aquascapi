@@ -18,6 +18,7 @@ import logging
 import logging.handlers
 from demo import create_demo_get_time
 from wiringpi_wrapper import WirinpiWrapper
+import core
 
 LOG_FILENAME = "/tmp/aquascapi.log"
 
@@ -45,6 +46,7 @@ if __name__ == '__main__':
         logging.info('### Starting demostration')
         logging.info('### configuration = (%s)'% args.config)
     else:
+	import core
         get_time = core.get_time
         formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
         logging.getLogger().setLevel(logging.WARNING)
@@ -56,7 +58,7 @@ if __name__ == '__main__':
 
     logging.getLogger('schedule').setLevel(logging.WARNING)
     wiringpi = WirinpiWrapper(mocking=args.mocking)
-    import core
+    print args.config
     core.setup(config_file_name=args.config, 
                wiringpi=wiringpi, 
                calculate_time_function=get_time)
