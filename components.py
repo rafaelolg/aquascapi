@@ -130,7 +130,7 @@ class Peristaltic(NormallyOffRelay):
         time_to_pump = mililiters / flow_rate
         logging.debug('Pumping %s mls in %s seconds', mililiters, time_to_pump)
         self.on()
-        self.wiringpi.delay(time_to_pump * 1000)
+        self.wiringpi.delay(int(time_to_pump * 1000))
         self.off()
 
 
