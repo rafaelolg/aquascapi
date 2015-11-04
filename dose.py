@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument("dose_time", help="Total seconds of dose", type=int)
     args = parser.parse_args()
 
-    wiringpi = wiringpi_wrapper.WirinpiWrapper()
+    wiringpi = WirinpiWrapper()
     wiringpi.wiringPiSetupGpio()
     doser = components.Peristaltic(args.pin_number, wiringpi)
     doser.pump(args.dose_time * doser.DEFAULT_FLOW)
